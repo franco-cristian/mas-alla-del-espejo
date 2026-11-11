@@ -1,26 +1,29 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Fondo General Amarillo Clarito Unificado */
+  --canvas-bg: #FEF9E7;
+  --canvas-card: #FFFFFF;
+  --text-primary: #181510;
+  --text-muted: #6B6152;
+  
+  /* Dorado Oficial Miss World / Más Allá del Espejo */
+  --gold-primary: #D4AF37;
+  --gold-glow: #F3C948;
+  --gold-border: #F0DE9C;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+html,
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--canvas-bg);
+  color: var(--text-primary);
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+/* Selección de texto en dorado */
+::selection {
+  background-color: #FDE68A;
+  color: #181510;
 }

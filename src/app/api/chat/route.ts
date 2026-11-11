@@ -3,8 +3,6 @@ import { streamText, convertToModelMessages, type UIMessage } from "ai";
 import { detectCrisisIntent } from "@/lib/security/crisis-detector";
 import { checkRateLimit } from "@/lib/security/rate-limiter";
 
-export const runtime = "edge";
-
 const groq = createOpenAI({
   baseURL: "https://api.groq.com/openai/v1",
   apiKey: process.env.GROQ_API_KEY,
@@ -30,7 +28,6 @@ Si el usuario manifiesta pensamientos de muerte, suicidio, autolesión o violenc
 
 export async function POST(req: Request) {
   try {
-    // Rate Limiting por IP
     const clientIp =
       req.headers.get("x-forwarded-for")?.split(",")[0] ||
       req.headers.get("x-real-ip") ||
@@ -38,7 +35,7 @@ export async function POST(req: Request) {
 
     const rateResult = checkRateLimit(clientIp, {
       windowMs: 60 * 1000,
-      maxRequests: 12, // 12 mensajes por minuto por usuario
+      maxRequests: 12,
     });
 
     if (!rateResult.success) {
