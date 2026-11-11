@@ -1,11 +1,58 @@
 "use client";
 
-import React from "react";
+import React, { useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { ArrowDown, HeartHandshake, ShieldAlert, Crown, Sparkles, Play } from "lucide-react";
+import {
+  ArrowDown,
+  HeartHandshake,
+  ShieldAlert,
+  Crown,
+  Play,
+  Volume2,
+  VolumeX,
+  RotateCcw,
+  ChevronRight,
+} from "lucide-react";
 import { BrandRibbonIcon } from "@/components/common/brand-logo";
 
 export function HeroSection() {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const togglePlay = () => {
+    if (!videoRef.current) return;
+    if (isPlaying) {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      videoRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
+  const toggleMute = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!videoRef.current) return;
+    videoRef.current.muted = !isMuted;
+    setIsMuted(!isMuted);
+  };
+
+  const handleTimeUpdate = () => {
+    if (!videoRef.current) return;
+    const current = videoRef.current.currentTime;
+    const total = videoRef.current.duration;
+    if (total > 0) {
+      setProgress((current / total) * 100);
+    }
+  };
+
+  const handleVideoEnded = () => {
+    setIsPlaying(false);
+    setProgress(0);
+  };
+
   return (
     <section className="relative overflow-hidden pt-12 pb-20">
       <div className="container mx-auto px-4 sm:px-6">
@@ -73,67 +120,100 @@ export function HeroSection() {
             </div>
           </motion.div>
 
-          {/* Columna Visual: Tarjeta Audrey con Lazo Visible */}
+          {/* Columna Visual: Reproductor Vertical 9:16 */}
           <motion.div
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.7, delay: 0.2 }}
             className="lg:col-span-5 flex justify-center"
           >
-            <div className="w-full max-w-sm flex flex-col gap-3">
-              {/* Marco Fotográfico Editorial */}
-              <div className="relative overflow-hidden rounded-3xl border-2 border-[#F0DE9C] bg-white p-3 shadow-xl">
-                <div className="relative aspect-4/5 w-full rounded-2xl border border-[#F0DE9C]/60 bg-linear-to-t from-zinc-950 via-zinc-900/60 to-zinc-800 flex flex-col justify-between p-6 text-white overflow-hidden">
-                  
-                  {/* Header de la tarjeta con Lazo Destacado */}
-                  <div className="flex items-center justify-between z-10">
-                    <span className="rounded-full bg-[#FEF3C7] border border-[#F0DE9C] px-3.5 py-1 text-[10px] font-black tracking-widest uppercase text-zinc-950 shadow-xs">
-                      Miss Mundo Formosa 2026
-                    </span>
-                    <BrandRibbonIcon size={38} />
-                  </div>
+            <div className="w-full max-w-77.5 sm:max-w-85 flex flex-col gap-3">
+              {/* Marco Editorial Tipo Smartphone */}
+              <div className="relative overflow-hidden rounded-3xl border-2 border-[#F0DE9C] bg-white p-2.5 shadow-2xl">
+                <div
+                  onClick={togglePlay}
+                  className="group relative aspect-9/16 w-full cursor-pointer rounded-2xl bg-zinc-950 overflow-hidden shadow-inner"
+                >
+                  {/* Video Vertical Nativo */}
+                  <video
+                    ref={videoRef}
+                    src="/videos/audrey-presentacion.mp4"
+                    playsInline
+                    preload="metadata"
+                    onTimeUpdate={handleTimeUpdate}
+                    onEnded={handleVideoEnded}
+                    className="h-full w-full object-cover"
+                  />
 
-                  {/* Centro: Botón de Video */}
-                  <div className="my-auto flex flex-col items-center justify-center text-center z-10">
-                    <a
-                      href="#historia"
-                      className="group/btn flex h-16 w-16 items-center justify-center rounded-full border-2 border-white/80 bg-white/20 backdrop-blur-md transition-all hover:scale-110 hover:bg-[#D4AF37] hover:border-zinc-950"
-                      aria-label="Ver video presentación"
-                    >
-                      <Play className="h-7 w-7 text-white fill-white group-hover/btn:text-zinc-950 group-hover/btn:fill-zinc-950 transition-colors ml-1" />
-                    </a>
-                    <span className="mt-3 text-[11px] font-bold uppercase tracking-wider text-zinc-200">
-                      Video Presentación Oficial
+                  {/* Header Superior: Badge + Lazo + Control de Audio */}
+                  <div className="absolute top-3 inset-x-3 flex items-center justify-between z-20">
+                    <span className="rounded-full bg-black/60 backdrop-blur-md border border-white/20 px-2.5 py-1 text-[9px] font-black tracking-widest uppercase text-[#FEF3C7]">
+                      Miss Mundo Formosa
                     </span>
-                  </div>
 
-                  {/* Pie de la tarjeta */}
-                  <div className="z-10 rounded-xl border border-white/20 bg-black/60 p-4 backdrop-blur-md">
-                    <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-[#D4AF37]">
-                      <Sparkles className="h-3 w-3" />
-                      Audrey Valentina Caballero
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={toggleMute}
+                        className="flex h-8 w-8 items-center justify-center rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white transition-transform hover:scale-105"
+                        aria-label={isMuted ? "Activar audio" : "Silenciar"}
+                      >
+                        {isMuted ? (
+                          <VolumeX className="h-4 w-4 text-red-400" />
+                        ) : (
+                          <Volume2 className="h-4 w-4 text-[#D4AF37]" />
+                        )}
+                      </button>
+
+                      <BrandRibbonIcon size={34} />
                     </div>
-                    <p className="mt-1 font-serif italic text-xs text-zinc-200 leading-snug">
-                      «Mirar más allá de lo evidente y dar lugar a aquello que muchas veces queda en silencio.»
-                    </p>
+                  </div>
+
+                  {/* Botón Central de Play/Pause */}
+                  {!isPlaying && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-[1px] transition-all z-10">
+                      <div className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-white/90 bg-[#D4AF37]/90 text-zinc-950 shadow-2xl transition-transform hover:scale-110">
+                        {progress > 95 ? (
+                          <RotateCcw className="h-7 w-7" />
+                        ) : (
+                          <Play className="h-7 w-7 fill-zinc-950 ml-1" />
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Barra Delgada de Progreso Dorado al Pie */}
+                  <div className="absolute bottom-0 inset-x-0 h-1 bg-white/20 z-20">
+                    <div
+                      className="h-full bg-[#D4AF37] transition-all duration-150"
+                      style={{ width: `${progress}%` }}
+                    />
                   </div>
                 </div>
               </div>
 
-              {/* Badge "4 Capítulos Reales" Integrado Limpiamente */}
-              <div className="rounded-2xl border border-[#F0DE9C] bg-white p-3.5 shadow-xs flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#FEF3C7] border border-[#F0DE9C] text-zinc-950 font-serif font-black text-lg">
-                  4
-                </div>
-                <div>
-                  <div className="text-xs font-black text-zinc-950 uppercase tracking-wider">
-                    Capítulos Reales
+              {/* Botón Interactivo: Acceso Directo a los 4 Capítulos */}
+              <a
+                href="#historia"
+                className="group flex items-center justify-between rounded-2xl border border-[#F0DE9C] bg-white p-3.5 shadow-xs transition-all hover:border-[#D4AF37] hover:bg-[#FEF3C7]/40 hover:shadow-md"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#FEF3C7] border border-[#F0DE9C] text-zinc-950 font-serif font-black text-base shrink-0 transition-transform group-hover:scale-105">
+                    4
                   </div>
-                  <div className="text-[11px] text-[#B45309] font-medium">
-                    Serie «Mi Historia»
+                  <div>
+                    <div className="text-xs font-black text-zinc-950 uppercase tracking-wider group-hover:text-[#B45309] transition-colors">
+                      Capítulos Reales
+                    </div>
+                    <div className="text-[11px] text-zinc-600 font-medium leading-tight">
+                      Serie «Mi Historia» · Audrey Caballero
+                    </div>
                   </div>
                 </div>
-              </div>
+                <div className="rounded-full bg-zinc-100 p-1.5 text-zinc-400 group-hover:bg-[#D4AF37] group-hover:text-zinc-950 transition-colors">
+                  <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                </div>
+              </a>
             </div>
           </motion.div>
         </div>
